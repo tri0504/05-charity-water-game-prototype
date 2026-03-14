@@ -60,7 +60,6 @@ const confettiLayerElement = document.getElementById("confetti-layer");
 const playAgainButton = document.getElementById("play-again");
 const finalScoreElement = document.getElementById("final-score");
 const finalTimeElement = document.getElementById("final-time");
-const startGameButton = document.getElementById("start-game");
 const resetGameButton = document.getElementById("reset-game");
 
 // Game state variables that change while the player is playing.
@@ -139,9 +138,11 @@ function renderBoard() {
 function handleCardClick(event) {
 	const clickedCard = event.currentTarget;
 
-	// Wait for the player to press Start before allowing card flips.
+	// Start the game timer on the first card click of each round.
 	if (!gameStarted) {
-		return;
+		gameStarted = true;
+		startTimer();
+		snippetPanel.textContent = "Game started! Match a pair to reveal a clean water solution fact.";
 	}
 
 	// Stop invalid clicks while checking cards or when card is already handled.
@@ -340,24 +341,9 @@ function checkWin() {
 	// Freeze timer and show end-of-game results.
 	stopTimer();
 	gameStarted = false;
-	startGameButton.disabled = true;
-	resetGameButton.disabled = true;
 	finalScoreElement.textContent = String(score);
 	finalTimeElement.textContent = formatTime(secondsElapsed);
 	showWinCelebration();
-}
-
-// Start button begins the timer and unlocks active gameplay.
-function startGame() {
-	if (gameStarted) {
-		return;
-	}
-
-	gameStarted = true;
-	startTimer();
-	startGameButton.disabled = true;
-	resetGameButton.disabled = false;
-	snippetPanel.textContent = "Game started! Match a pair to reveal a clean water solution fact.";
 }
 
 // Restore all game values and UI to begin a brand-new round.
@@ -376,11 +362,9 @@ function resetGame() {
 	// Reset on-screen labels and helper text.
 	scoreElement.textContent = "0";
 	timerElement.textContent = "00:00";
-	snippetPanel.textContent = "Press Start when you are ready. Match a pair to reveal a clean water solution fact.";
-	startGameButton.disabled = false;
-	resetGameButton.disabled = true;
+	snippetPanel.textContent = "Click any card to start the game. Match a pair to reveal a clean water solution fact.";
 
-	// Draw fresh cards and wait for the player to press Start.
+	// Draw fresh cards and wait for the player's first card click.
 	renderBoard();
 }
 
@@ -389,7 +373,6 @@ playAgainButton.addEventListener("click", () => {
 	resetGame();
 });
 
-startGameButton.addEventListener("click", startGame);
 resetGameButton.addEventListener("click", resetGame);
 
 // Start the first game when the page loads.
